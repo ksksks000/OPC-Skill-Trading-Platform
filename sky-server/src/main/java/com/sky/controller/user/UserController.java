@@ -29,18 +29,18 @@ public class UserController {
     private JwtProperties jwtProperties;
 
     @PostMapping("/login")
-    public Result<UserLoginVO> login(@RequestBody UserLoginDTO userLoginDTO){
+    public Result<UserLoginVO> login(@RequestBody UserLoginDTO userLoginDTO) {
+        log.info("用户登录：{}", userLoginDTO.getUsername());
+        User user = userService.login(userLoginDTO);
 
-        log.info("微信用户登录：{}",userLoginDTO.getCode());
-        User user = userService.wxLogin(userLoginDTO);
-
-        Map<String,Object> claims = new HashMap<>();
-        claims.put(JwtClaimsConstant.USER_ID,user.getId());
-        String token = JwtUtil.createJWT(jwtProperties.getUserSecretKey(),jwtProperties.getUserTtl(),claims);
+        Map<String, Object> claims = new HashMap<>();
+        claims.put(JwtClaimsConstant.USER_ID, user.getId());
+        String token = JwtUtil.createJWT(jwtProperties.getUserSecretKey(), jwtProperties.getUserTtl(), claims);
 
         UserLoginVO userLoginVO = UserLoginVO.builder()
                 .id(user.getId())
-                .openid(user.getOpenid())
+                .userName(user.getUsername())
+                .name(user.getName())
                 .token(token)
                 .build();
         return Result.success(userLoginVO);

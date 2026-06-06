@@ -1,5 +1,8 @@
 package com.sky.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,33 +18,29 @@ import java.math.BigDecimal;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@TableName("order_detail")
 public class OrderDetail implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @TableId(type = IdType.AUTO)
     private Long id;
 
-    //名称
+    // 名称
     private String name;
 
-    //订单id
+    // 订单id
     private Long orderId;
 
-    //菜品id
-    private Long dishId;
+    // 技能/服务ID
+    private Long skillId;
 
-    //套餐id
-    private Long setmealId;
-
-    //口味
-    private String dishFlavor;
-
-    //数量
+    // 数量
     private Integer number;
 
-    //金额
+    // 金额
     private BigDecimal amount;
 
-    //图片
+    // 图片
     private String image;
 }

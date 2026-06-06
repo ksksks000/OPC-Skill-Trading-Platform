@@ -1,7 +1,6 @@
 package com.sky.config;
 
 import com.sky.properties.AliOssProperties;
-import com.sky.service.DishService;
 import com.sky.utils.AliOssUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

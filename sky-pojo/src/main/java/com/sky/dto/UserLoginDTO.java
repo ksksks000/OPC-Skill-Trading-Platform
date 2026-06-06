@@ -2,14 +2,15 @@ package com.sky.dto;
 
 import lombok.Data;
 
-import java.io.Serializable;
+import java.math.BigDecimal;
 
 /**
- * C端用户登录
+ * 用户登录DTO
  */
 @Data
-public class UserLoginDTO implements Serializable {
+public class UserLoginDTO {
 
-    private String code;
+    private String username;
 
+    private String password;
 }

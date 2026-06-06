@@ -5,16 +5,20 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
-
+/**
+ * 用户登录响应VO
+ */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserLoginVO implements Serializable {
+public class UserLoginVO {
 
     private Long id;
-    private String openid;
-    private String token;
 
+    private String userName;
+
+    private String name;
+
+    private String token;
 }

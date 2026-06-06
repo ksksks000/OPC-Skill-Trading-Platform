@@ -64,10 +64,12 @@ public class AutoFillAspect {
                 e.printStackTrace();
             }
 
-        }else  if(operationType == OperationType.INSERT){
+        }else  if(operationType == OperationType.UPDATE){
             try {
                 Method setUpdateTime = entity.getClass().getDeclaredMethod(AutoFillConstant.SET_UPDATE_TIME, LocalDateTime.class);
                 Method setUpdateUser = entity.getClass().getDeclaredMethod(AutoFillConstant.SET_UPDATE_USER, Long.class);
+                setUpdateTime.invoke(entity,now);
+                setUpdateUser.invoke(entity,currentId);
             } catch (Exception e) {
                 e.printStackTrace();
             }

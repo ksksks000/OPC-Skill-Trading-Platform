@@ -1,0 +1,75 @@
+/**
+ * OPC 技能交易平台 - 全局 SCSS 变量
+ *
+ * 定义项目的设计令牌（Design Tokens），包括颜色、间距、圆角等。
+ * 所有页面和组件通过引用这些变量保持视觉一致性。
+ */
+
+/* ==================== 颜色系统 ==================== */
+
+// 主色调
+$color-primary: #e94560;           // 玫红 - 主强调色
+$color-primary-dark: #c23152;      // 深玫红 - 按钮按下态
+$color-primary-light: rgba(233, 69, 96, 0.08); // 浅玫红 - 标签背景
+
+// 深色系
+$color-dark: #1a1a2e;              // 深蓝黑 - 标题文字
+$color-dark-secondary: #16213e;    // 次深蓝 - 渐变辅助
+$color-dark-accent: #0f3460;       // 蓝色点缀 - 渐变辅助
+
+// 中性色
+$color-text: #333333;              // 正文文字
+$color-text-secondary: #666666;    // 次要文字
+$color-text-placeholder: #999999;  // 占位文字
+$color-text-hint: #bbbbbb;         // 提示文字
+
+// 背景色
+$color-bg: #f5f5f7;                // 页面背景
+$color-bg-white: #ffffff;          // 卡片背景
+$color-bg-grey: #f0f0f3;           // 聊天页背景
+$color-bg-input: #f5f5f7;          // 输入框背景
+
+// 功能色
+$color-success: #10b981;           // 成功/在线
+$color-warning: #f59e0b;           // 警告
+$color-error: #ef4444;             // 错误
+$color-info: #3b82f6;              // 信息
+
+// 边框
+$color-border: #eeeeee;            // 默认边框
+$color-border-light: #f0f0f0;      // 浅边框
+
+/* ==================== 间距系统 ==================== */
+
+$spacing-xs: 8rpx;
+$spacing-sm: 16rpx;
+$spacing-md: 24rpx;
+$spacing-lg: 32rpx;
+$spacing-xl: 48rpx;
+$spacing-xxl: 64rpx;
+
+/* ==================== 圆角系统 ==================== */
+
+$radius-sm: 8rpx;
+$radius-md: 16rpx;
+$radius-lg: 20rpx;
+$radius-xl: 24rpx;
+$radius-round: 999rpx;
+
+/* ==================== 字体系统 ==================== */
+
+$font-xs: 20rpx;
+$font-sm: 22rpx;
+$font-base: 26rpx;
+$font-md: 28rpx;
+$font-lg: 30rpx;
+$font-xl: 32rpx;
+$font-xxl: 36rpx;
+$font-title: 48rpx;
+
+/* ==================== 阴影系统 ==================== */
+
+$shadow-sm: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
+$shadow-md: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
+$shadow-lg: 0 8rpx 24rpx rgba(0, 0, 0, 0.08);
+$shadow-primary: 0 4rpx 16rpx rgba(233, 69, 96, 0.2);
