@@ -24,7 +24,7 @@ import java.util.Map;
  *
  * JWT 令牌说明：
  * - 登录成功后返回 token，前端需将其存入本地存储
- * - 后续请求需在请求头 "authentication" 中携带此 token
+ * - 后续请求需在请求头 "token" 中携带此 token
  * - 拦截器 JwtTokenUserInterceptor 会自动校验并提取用户ID
  */
 @RestController

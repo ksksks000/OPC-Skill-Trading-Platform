@@ -50,14 +50,12 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
      *
      * 拦截规则：
      * - /admin/**  → JwtTokenAdminInterceptor（读取 "token" 请求头）
-     * - /user/**   → JwtTokenUserInterceptor（读取 "authentication" 请求头）
+     * - /user/**   → JwtTokenUserInterceptor（读取 "token" 请求头）
      *
      * 排除路径：
      * - /admin/employee/login → 管理员登录
      * - /user/user/login      → 用户登录
-     *
-     * 注意：/user/ai/** 现在受 JwtTokenUserInterceptor 保护，
-     * 需要前端在请求头中携带 authentication 字段。
+     * - /user/user/register   → 用户注册
      */
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
