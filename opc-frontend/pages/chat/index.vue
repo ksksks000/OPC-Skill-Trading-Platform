@@ -192,7 +192,13 @@ export default {
     connectWebSocket() {
       if (!this.currentUserId) return
 
+      // WebSocket 地址：H5 环境走代理，小程序环境直连后端
+      // #ifdef H5
+      const wsUrl = `ws://${window.location.host}/ws/chat/${this.currentUserId}`
+      // #endif
+      // #ifndef H5
       const wsUrl = `ws://localhost:8080/ws/chat/${this.currentUserId}`
+      // #endif
       console.log('连接 WebSocket:', wsUrl)
 
       this.socketTask = uni.connectSocket({

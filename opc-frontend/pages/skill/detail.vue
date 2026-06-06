@@ -215,9 +215,7 @@ export default {
       try {
         const res = await request('/user/order/submit', {
           skillId: this.skill.id,
-          payMethod: 1,
-          remark: '',
-          amount: this.skill.price
+          remark: ''
         })
 
         if (res.code === 1 && res.data) {

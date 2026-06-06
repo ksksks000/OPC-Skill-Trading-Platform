@@ -46,6 +46,18 @@
       "style": {
         "navigationBarTitleText": "聊天"
       }
+    },
+    {
+      "path": "pages/skill/manage",
+      "style": {
+        "navigationBarTitleText": "技能管理"
+      }
+    },
+    {
+      "path": "pages/order/detail",
+      "style": {
+        "navigationBarTitleText": "订单详情"
+      }
     }
   ],
   "globalStyle": {

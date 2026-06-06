@@ -88,11 +88,17 @@ public class SkillServiceImpl implements SkillService {
         LambdaQueryWrapper<Skill> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Skill::getStatus, StatusConstant.ENABLE);
 
+        // category 参数：AI 传入的可能是分类名称（如"心理咨询"、"编程"），
+        // 同时匹配 tags、name、description 字段，提高 AI 搜索的召回率
         if (category != null && !category.isEmpty()) {
-            wrapper.like(Skill::getTags, category);
+            wrapper.and(w -> w.like(Skill::getTags, category)
+                    .or().like(Skill::getName, category)
+                    .or().like(Skill::getDescription, category));
         }
+        // tag 参数：匹配 tags 和 name 字段
         if (tag != null && !tag.isEmpty()) {
-            wrapper.like(Skill::getTags, tag);
+            wrapper.and(w -> w.like(Skill::getTags, tag)
+                    .or().like(Skill::getName, tag));
         }
         if (minPrice != null) {
             wrapper.ge(Skill::getPrice, minPrice);

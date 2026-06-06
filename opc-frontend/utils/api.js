@@ -6,7 +6,7 @@
 
 // API 基础地址，根据实际部署修改
 // 开发环境使用代理时设为空字符串，生产环境设为实际后端地址
-const BASE_URL = import.meta.env.DEV ? '' : 'https://your-api-domain.com'
+const BASE_URL = import.meta.env.DEV ? '' : 'localhost:8080'
 
 /**
  * 通用请求封装
@@ -24,9 +24,8 @@ export const request = (url, data = {}, method = 'POST') => {
       data,
       header: {
         'Content-Type': 'application/json',
-        // 从本地存储读取 token，实现自动携带认证信息
-        'authentication': uni.getStorageSync('token') || '',
-        'token': uni.getStorageSync('adminToken') || ''
+        // 统一使用 token 请求头，admin 和 user 共用
+        'token': uni.getStorageSync('token') || uni.getStorageSync('adminToken') || ''
       },
       success: (res) => {
         if (res.statusCode === 200) {
@@ -67,7 +66,7 @@ export const fetchSSE = async (url, data, { onChunk, onDone, onError }) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'authentication': uni.getStorageSync('token') || ''
+        'token': uni.getStorageSync('token') || ''
       },
       body: JSON.stringify(data)
     })

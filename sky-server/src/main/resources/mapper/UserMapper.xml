@@ -3,11 +3,13 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.sky.mapper.UserMapper">
 
-    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
-        insert into user (username, password, name, phone, sex, id_number, avatar, role, status, create_time)
-            values
-        (#{username}, #{password}, #{name}, #{phone}, #{sex}, #{idNumber}, #{avatar}, #{role}, #{status}, #{createTime})
-    </insert>
+    <!--
+        注意：已删除自定义 insert 方法，改用 MyBatis-Plus 的 BaseMapper.insert()
+        原自定义 insert 会覆盖 MyBatis-Plus 的自动 insert，导致：
+        1. @TableId(type = IdType.AUTO) 主键策略可能不生效
+        2. MyBatis-Plus 的字段填充功能失效
+        3. null 值会插入为 null 而非使用数据库默认值
+    -->
 
     <select id="countByMap" resultType="java.lang.Integer">
         select count(id) from user

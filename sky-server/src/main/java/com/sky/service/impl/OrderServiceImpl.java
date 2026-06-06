@@ -1,6 +1,9 @@
 package com.sky.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.sky.constant.MessageConstant;
 import com.sky.context.BaseContext;
 import com.sky.dto.OrdersPaymentDTO;
@@ -12,8 +15,10 @@ import com.sky.exception.OrderBusinessException;
 import com.sky.mapper.OrderDetailMapper;
 import com.sky.mapper.OrderMapper;
 import com.sky.mapper.SkillMapper;
+import com.sky.result.PageResult;
 import com.sky.service.OrderService;
 import com.sky.vo.OrderSubmitVO;
+import com.sky.vo.OrderVO;
 import com.sky.websocket.WebSocketServer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -140,5 +145,100 @@ public class OrderServiceImpl implements OrderService {
         } catch (Exception e) {
             log.error("WebSocket推送失败", e);
         }
+    }
+
+    /**
+     * 用户端分页查询订单列表
+     *
+     * 使用 MyBatis-Plus 的 LambdaQueryWrapper 构建查询条件：
+     * 1. 必须匹配当前用户ID
+     * 2. 可选按订单状态筛选
+     * 3. 按下单时间降序排列（最新的在前）
+     *
+     * @param userId   当前登录用户ID
+     * @param status   订单状态（null 查全部）
+     * @param page     页码
+     * @param pageSize 每页条数
+     * @return 分页结果
+     */
+    @Override
+    public PageResult pageQueryByUserId(Long userId, Integer status, int page, int pageSize) {
+        // 构建查询条件
+        LambdaQueryWrapper<Orders> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Orders::getUserId, userId);
+        if (status != null) {
+            wrapper.eq(Orders::getStatus, status);
+        }
+        wrapper.orderByDesc(Orders::getOrderTime);
+
+        // 分页查询
+        IPage<Orders> pageResult = orderMapper.selectPage(new Page<>(page, pageSize), wrapper);
+
+        // 将 Orders 转为 OrderVO（附带明细列表）
+        List<OrderVO> voList = pageResult.getRecords().stream().map(order -> {
+            // 查询该订单的明细列表
+            LambdaQueryWrapper<OrderDetail> detailWrapper = new LambdaQueryWrapper<>();
+            detailWrapper.eq(OrderDetail::getOrderId, order.getId());
+            List<OrderDetail> details = orderDetailMapper.selectList(detailWrapper);
+
+            return OrderVO.builder()
+                    .id(order.getId())
+                    .number(order.getNumber())
+                    .status(order.getStatus())
+                    .userId(order.getUserId())
+                    .sellerId(order.getSellerId())
+                    .deliveryStatus(order.getDeliveryStatus())
+                    .orderTime(order.getOrderTime())
+                    .checkoutTime(order.getCheckoutTime())
+                    .payMethod(order.getPayMethod())
+                    .payStatus(order.getPayStatus())
+                    .amount(order.getAmount())
+                    .remark(order.getRemark())
+                    .cancelReason(order.getCancelReason())
+                    .rejectionReason(order.getRejectionReason())
+                    .cancelTime(order.getCancelTime())
+                    .orderDetailList(details)
+                    .build();
+        }).toList();
+
+        return new PageResult(pageResult.getTotal(), voList);
+    }
+
+    /**
+     * 根据订单ID查询订单详情（含明细）
+     *
+     * @param orderId 订单ID
+     * @return 订单VO
+     */
+    @Override
+    public OrderVO getOrderDetailById(Long orderId) {
+        Orders order = orderMapper.selectById(orderId);
+        if (order == null) {
+            throw new OrderBusinessException(MessageConstant.ORDER_NOT_FOUND);
+        }
+
+        // 查询订单明细
+        LambdaQueryWrapper<OrderDetail> detailWrapper = new LambdaQueryWrapper<>();
+        detailWrapper.eq(OrderDetail::getOrderId, orderId);
+        List<OrderDetail> details = orderDetailMapper.selectList(detailWrapper);
+
+        return OrderVO.builder()
+                .id(order.getId())
+                .number(order.getNumber())
+                .status(order.getStatus())
+                .userId(order.getUserId())
+                .sellerId(order.getSellerId())
+                .deliveryStatus(order.getDeliveryStatus())
+                .orderTime(order.getOrderTime())
+                .checkoutTime(order.getCheckoutTime())
+                .payMethod(order.getPayMethod())
+                .payStatus(order.getPayStatus())
+                .amount(order.getAmount())
+                .remark(order.getRemark())
+                .cancelReason(order.getCancelReason())
+                .rejectionReason(order.getRejectionReason())
+                .cancelTime(order.getCancelTime())
+                .orderDetailList(details)
+                .build();
     }
 }

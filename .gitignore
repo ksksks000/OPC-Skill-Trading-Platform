@@ -1,6 +1,105 @@
-**/target/
-.idea
-*.iml
+# ==============================================================================
+# 1. Build & Compilation Artifacts (构建与编译产物)
+#    Description: Ignore generated files from Maven/Gradle builds and Java compilation.
+# ==============================================================================
+## Maven
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+## Gradle
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+## Java Class Files
 *.class
+
+# ==============================================================================
+# 2. IDE & Editor Configurations (开发工具配置)
+#    Description: Keep personal editor settings out of the repository.
+# ==============================================================================
+## IntelliJ IDEA
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+!**/src/main/**/out/
+!**/src/test/**/out/
+
+## Eclipse
+.classpath
+.project
+.settings/
+bin/
+
+## VS Code
+.vscode/
+*.code-workspace
+
+# ==============================================================================
+# 3. Test & QA Exclusions (测试与质量保证排除)
+#    Description: Exclude test sources and reports as per project requirements.
+# ==============================================================================
+## Test Source Files
 *Test.java
+*Tests.java
+*TestCase.java
+
+## Test Directories
 **/test/
+**/tests/
+**/unit-tests/
+**/integration-tests/
+
+# ==============================================================================
+# 4. Project Documentation & Reports (项目文档与报告 - 私有/临时)
+#    Description: Internal analysis, phase reports, and temporary notes.
+# ==============================================================================
+## Phase Inspection Reports (Using Wildcards for scalability)
+*阶段检测报告.md
+*阶段验收报告.md
+
+## Specific Analysis & Planning Docs
+PROJECT_ANALYSIS.md
+项目盘点与重构规划报告.md
+
+## Personal Learning Notes & Scratchpads
+eating-sky-total.md
+json.md
+notes.md
+todo.md
+
+# ==============================================================================
+# 5. OS & System Files (操作系统生成文件)
+#    Description: Standard system clutter to keep repo clean.
+# ==============================================================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# ==============================================================================
+# 6. Sensitive Data (敏感信息 - 安全最佳实践)
+#    Description: Prevent accidental leakage of credentials.
+# ==============================================================================
+application-dev.yml
+application-prod.yml
+*.pem
+*.key
+.env
+.env.local

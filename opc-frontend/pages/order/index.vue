@@ -70,9 +70,10 @@ export default {
       try {
         // TODO: 后端需补充用户端订单列表接口
         // 当前使用管理端接口模拟
-        const res = await request('/admin/skill/page', { page: 1, pageSize: 20 }, 'GET')
-        // 临时模拟空数据
-        this.orderList = []
+        const res = await request('/user/order/list', { page: 1, pageSize: 20 }, 'GET')
+        if (res.code === 1 && res.data) {
+          this.orderList = res.data.records || []
+        }
       } catch (e) {
         console.error('加载订单失败:', e)
       } finally {

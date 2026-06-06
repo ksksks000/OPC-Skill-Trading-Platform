@@ -122,7 +122,7 @@ export default {
         const params = { page: this.page, pageSize: this.pageSize }
         if (this.currentCategory) params.categoryId = this.currentCategory
 
-        const res = await request('/admin/skill/page', params, 'GET')
+        const res = await request('/user/skill/page', params, 'GET')
         if (res.code === 1 && res.data) {
           const records = res.data.records || []
           if (this.page === 1) {

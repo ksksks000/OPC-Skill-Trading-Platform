@@ -42,7 +42,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             throw new AccountNotFoundException(MessageConstant.ACCOUNT_NOT_FOUND);
         }
 
-        log.info("查到员工 id={}, username={}, 哈希={}", employee.getId(), employee.getUsername(), employee.getPassword());
+        //log.info("查到员工 id={}, username={}, 哈希={}", employee.getId(), employee.getUsername(), employee.getPassword());
         if (!passwordEncoder.matches(password, employee.getPassword())) {
             throw new PasswordErrorException(MessageConstant.PASSWORD_ERROR);
         }

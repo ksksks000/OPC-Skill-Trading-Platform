@@ -46,11 +46,11 @@ sky:
     admin-token-name: token
     user-secret-key: itheimaitheimaitheimaitheimaitheima
     user-ttl: 7200000
-    user-token-name: authentication
+    user-token-name: token
   alioss:
     endpoint: ${sky.alioss.endpoint}
-    access-key-id: ${sky.alioss-key-id}
-    access-key-secret: ${sky.alioss-key-secret}
+    access-key-id: ${sky.alioss.access-key-id}
+    access-key-secret: ${sky.alioss.access-key-secret}
     bucket-name: ${sky.alioss.bucket-name}
   # AI 配置（支持 OpenAI 兼容接口，如 DeepSeek、智谱等）
   ai:

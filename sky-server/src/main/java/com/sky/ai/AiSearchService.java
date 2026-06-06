@@ -2,7 +2,6 @@ package com.sky.ai;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 
@@ -18,34 +17,13 @@ import reactor.core.publisher.Flux;
  * 3. AI 自动调用 searchSkillsByIntent 工具函数查询数据库
  * 4. AI 根据搜索结果生成推荐语，以 JSON 格式返回
  * 5. 结果通过 SSE 流式推送给前端
- *
- * 技术要点：
- * - 使用 ChatClient 与 AI 模型交互
- * - 通过 .functions("searchSkillsByIntent") 注册工具函数
- * - System Prompt 定义 AI 的角色、行为规范和输出格式
- * - 支持流式（Flux<String>）和同步两种调用模式
  */
 @Slf4j
 @Service
 public class AiSearchService {
 
-    /** ChatClient - Spring AI 的核心对话客户端 */
     private final ChatClient chatClient;
 
-    /** AI 模型名称，从配置文件读取（支持 OpenAI/DeepSeek/智谱等兼容接口） */
-    @Value("${sky.ai.model:deepseek-chat}")
-    private String modelName;
-
-    /**
-     * System Prompt - 定义 AI 的角色和行为规范
-     *
-     * 这是最关键的部分，决定了 AI 如何理解用户意图和调用工具。
-     * 包含以下要素：
-     * - 角色定义：OPC 技能交易平台的智能导购助手
-     * - 工作流程：分析意图 -> 调用工具 -> 生成推荐
-     * - 推荐语撰写规范：温暖亲切、突出亮点、对比差异
-     * - 返回格式：严格的 JSON 结构（recommendationText + skillIds）
-     */
     private static final String SYSTEM_PROMPT = """
             你是 OPC 技能交易平台的智能导购助手。你的任务是帮助用户找到最合适的技能/服务。
 
@@ -55,6 +33,13 @@ public class AiSearchService {
             3. 根据搜索结果，撰写一段暖心的推荐语
             4. 以严格的 JSON 格式返回结果
 
+            ## 搜索技巧（重要！）
+            - category 参数应填写用户需求的核心关键词，如"心理咨询"、"编程"、"简历"、"法律"、"设计"、"占卜"等
+            - 如果用户的需求比较模糊，尝试用更宽泛的关键词搜索，如"咨询"、"教学"
+            - 不要传入过于具体或生僻的 category 值，这可能导致搜索不到结果
+            - tag 参数用于进一步筛选，如"Python"、"二级咨询师"等
+            - 如果第一次搜索结果为空，请用更宽泛的关键词再搜索一次
+
             ## 推荐语撰写规范
             - 语气温暖亲切，像朋友在推荐
             - 突出每个技能的亮点和适合的人群
@@ -63,7 +48,7 @@ public class AiSearchService {
             - 推荐语长度控制在 100-200 字
 
             ## 返回格式（严格遵守）
-            必须返回以下 JSON 格式，不要添加任何其他文字：
+            必须返回以下 JSON 格式，不要添加任何其他文字，不要输出思考过程：
             {
               "recommendationText": "你的推荐语文本",
               "skillIds": [1, 2, 3]
@@ -73,34 +58,19 @@ public class AiSearchService {
             - skillIds 必须从搜索结果中提取，不要编造
             - 如果搜索结果为空，skillIds 为空数组，推荐语中说明未找到并给出建议
             - 只返回 JSON，不要包含 markdown 代码块标记
+            - 不要输出思考过程，直接返回 JSON 结果
             """;
 
-    /**
-     * 构造函数 - 注入 ChatClient.Builder
-     *
-     * Spring AI 会自动配置 ChatClient.Builder Bean，
-     * 其中包含 application.yml 中配置的 API Key、Base URL 等信息。
-     *
-     * @param chatClientBuilder Spring AI 自动注入的 ChatClient 构建器
-     */
     public AiSearchService(ChatClient.Builder chatClientBuilder) {
         this.chatClient = chatClientBuilder.build();
     }
 
     /**
-     * 流式搜索 - 通过 SSE 推送 AI 的思考过程和最终结果
-     *
-     * 使用场景：前端需要"打字机效果"，逐字显示 AI 的响应。
-     * AI 会先调用工具函数搜索技能，然后流式输出推荐语和技能列表。
-     *
-     * @param query 用户的自然语言查询
-     * @return Flux<String> 流式输出的文本片段，前端逐片段拼接即可
+     * 流式搜索 - 通过 SSE 推送 AI 响应
      */
     public Flux<String> searchStream(String query) {
         log.info("AI 智搜开始（流式），用户查询：{}", query);
 
-        // 使用 ChatClient 的流式 API
-        // .functions("searchSkillsByIntent") 注册工具函数，AI 会自动判断是否需要调用
         return chatClient.prompt()
                 .system(SYSTEM_PROMPT)
                 .user(query)
@@ -111,21 +81,29 @@ public class AiSearchService {
 
     /**
      * 同步搜索 - 一次性返回完整的搜索结果
-     *
-     * 使用场景：不需要流式输出的场景，如后台任务、测试等。
-     * 返回内容为 JSON 字符串，包含 recommendationText 和 skillIds。
-     *
-     * @param query 用户的自然语言查询
-     * @return AI 生成的完整 JSON 响应
      */
     public String searchSync(String query) {
         log.info("AI 智搜开始（同步），用户查询：{}", query);
 
-        return chatClient.prompt()
+        String result = chatClient.prompt()
                 .system(SYSTEM_PROMPT)
                 .user(query)
                 .functions("searchSkillsByIntent")
                 .call()
                 .content();
+
+        // 过滤掉模型的思考过程输出（<think>...</think> 标签）
+        return filterThinkTags(result);
+    }
+
+    /**
+     * 过滤模型输出中的思考标签
+     * MiniMax 等模型可能会输出 <think>...</think> 标签包裹的思考过程，
+     * 需要移除这些内容，只保留最终的 JSON 结果。
+     */
+    private String filterThinkTags(String content) {
+        if (content == null) return null;
+        // 移除 <think>...</think> 标签及其内容
+        return content.replaceAll("(?s)<think>.*?</think>", "").trim();
     }
 }

@@ -168,7 +168,7 @@ export default {
 
       try {
         // 调用 SSE 流式接口
-        await fetchSSE('/api/ai/search-stream', { query: this.query }, {
+        await fetchSSE('/user/ai/search-stream', { query: this.query }, {
           // 每收到一个文本片段，追加到推荐语（打字机效果）
           onChunk: (chunk) => {
             this.fullText += chunk
@@ -230,7 +230,7 @@ export default {
       try {
         // 逐个查询技能详情（也可以改为批量接口）
         const promises = ids.map(id =>
-          request(`/admin/skill/${id}`, {}, 'GET').catch(() => null)
+          request(`/user/skill/${id}`, {}, 'GET').catch(() => null)
         )
         const results = await Promise.all(promises)
         this.skillList = results
